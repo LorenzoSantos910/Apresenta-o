@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>GM Reparos - Administração de Pedidos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --azul: #1e88e5;
+      --azul-escuro: #1565c0;
+      --cinza: #f4f6f8;
+      --texto: #333;
+    }
+    * { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+    body { margin: 0; background: var(--cinza); color: var(--texto); display: flex; min-height: 100vh; }
+    .sidebar { width: 230px; background: var(--azul-escuro); color: #fff; padding: 20px 0; }
+    .sidebar h1 { text-align: center; font-size: 20px; margin-bottom: 30px; }
+    .menu a { display: block; padding: 12px 20px; color: #fff; text-decoration: none; cursor: pointer; }
+    .menu a:hover, .menu a.active { background: var(--azul); }
+    .content { flex: 1; padding: 20px; }
+    .topbar { background: #fff; padding: 15px 20px; border-radius: 6px; margin-bottom: 20px; font-size: 22px; font-weight: bold; }
+    .card { background: #fff; padding: 20px; border-radius: 6px; margin-bottom: 20px; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc; }
+    button { background: var(--azul); color: #fff; border: none; margin-top: 15px; cursor: pointer; font-size: 15px; }
+    button:hover { background: var(--azul-escuro); }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    table th, table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    table th { background: #eee; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h1>GM REPAROS</h1>
+  <div class="menu">
+    <a class="active" onclick="showTab(event,'lancar')">Lançar Pedido</a>
+    <a onclick="showTab(event,'pedidosLista')">Pedidos</a>
+    <a onclick="showTab(event,'produtos')">Produtos</a>
+    <a onclick="showTab(event,'clientes')">Clientes</a>
+    <a onclick="showTab(event,'empresa')">Empresa</a>
+  </div>
+</div>
+
+<div class="content">
+  <div class="topbar">Sistema Interno - GM Reparos</div>
+
+  <div id="lancar" class="card">
+    <h2>Lançar Pedido</h2>
+    <label>Número do Pedido</label>
+    <input id="numeroPedido" readonly />
+
+    <h3>Dados do Cliente</h3>
+    <label>Selecionar Cliente</label>
+    <select id="selectCliente" onchange="preencherCliente()"></select>
+
+    <label>Nome</label><input id="clienteNome" />
+    <label>CNPJ</label><input id="clienteCNPJ" />
+    <label>CEP</label><input id="clienteCEP" />
+    <label>Endereço</label><input id="clienteEndereco" />
+    <label>Número</label><input id="clienteNumero" />
+    <label>Bairro</label><input id="clienteBairro" />
+    <label>Cidade</label><input id="clienteCidade" />
+    <label>Estado</label><input id="clienteEstado" />
+    <label>Complemento</label><input id="clienteComplemento" />
+
+    <h3>Itens do Pedido</h3>
+    <label>Produto</label>
+    <select id="pedidoProduto" onchange="preencherPrecoProduto()"></select>
+
+    <label>Quantidade</label>
+    <input type="number" id="pedidoQuantidade" min="1" />
+
+    <label>Preço Unitário</label>
+    <input type="number" id="pedidoPreco" step="0.01" />
+
+    <button onclick="adicionarItem()">Adicionar Item</button>
+
+    <table>
+      <thead>
+        <tr><th>Produto</th><th>Qtd</th><th>Unitário</th><th>Subtotal</th><th>Ação</th></tr>
+      </thead>
+      <tbody id="itensPedido"></tbody>
+    </table>
+
+    <button onclick="finalizarPedido()">Adicionar Pedido</button>
+  </div>
+
+  <div id="pedidosLista" class="card hidden">
+    <h2>Pedidos</h2>
+    <table>
+      <thead>
+        <tr><th>Nº</th><th>Cliente</th><th>CNPJ</th><th>Total</th><th>Ações</th></tr>
+      </thead>
+      <tbody id="listaPedidos"></tbody>
+    </table>
+  </div>
+
+  <div id="produtos" class="card hidden">
+    <h2>Cadastrar Produto</h2>
+    <label>Nome</label><input id="nomeProduto" />
+    <label>Valor</label><input id="valorProduto" type="number" step="0.01" />
+    <button onclick="cadastrarProduto()">Cadastrar</button>
+
+    <table>
+      <thead><tr><th>Produto</th><th>Valor</th><th>Ações</th></tr></thead>
+      <tbody id="listaProdutos"></tbody>
+    </table>
+  </div>
+
+  <div id="clientes" class="card hidden">
+    <h2>Cadastrar Cliente</h2>
+    <label>Nome</label><input id="cliNome" />
+    <label>CNPJ</label><input id="cliCNPJ" />
+    <label>CEP</label><input id="cliCEP" />
+    <label>Endereço</label><input id="cliEndereco" />
+    <label>Número</label><input id="cliNumero" />
+    <label>Bairro</label><input id="cliBairro" />
+    <label>Cidade</label><input id="cliCidade" />
+    <label>Estado</label><input id="cliEstado" />
+    <label>Complemento</label><input id="cliComplemento" />
+
+    <button onclick="cadastrarCliente()">Cadastrar Cliente</button>
+
+    <table>
+      <thead><tr><th>Cliente</th><th>CNPJ</th><th>Ações</th></tr></thead>
+      <tbody id="listaClientes"></tbody>
+    </table>
+  </div>
+
+  <div id="empresa" class="card hidden">
+    <h2>Dados da Empresa</h2>
+    <label>Empresa</label><input id="empresaNome" />
+    <label>CNPJ</label><input id="empresaCNPJ" />
+    <label>Endereço</label><input id="empresaEndereco" />
+    <label>Cidade</label><input id="empresaCidade" />
+    <label>Estado</label><input id="empresaEstado" />
+    <button onclick="salvarEmpresa()">Salvar Dados</button>
+  </div>
+</div>
+
+<script>
+let produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+let pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+let ultimoNumeroPedido = Number(localStorage.getItem('ultimoNumeroPedido')) || 0;
+let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+let empresa = JSON.parse(localStorage.getItem('empresa')) || {};
+let itensTemporarios = [];
+
+function showTab(event, tab) {
+  ['lancar','pedidosLista','produtos','clientes','empresa'].forEach(id=>{
+    document.getElementById(id).classList.add('hidden');
+  });
+  document.getElementById(tab).classList.remove('hidden');
+  document.querySelectorAll('.menu a').forEach(a=>a.classList.remove('active'));
+  if(event) event.target.classList.add('active');
+}
+
+function atualizarProdutos(){
+  pedidoProduto.innerHTML='';
+  listaProdutos.innerHTML='';
+  produtos.forEach((p,i)=>{
+    pedidoProduto.innerHTML+=`<option value="${p.nome}">${p.nome}</option>`;
+    listaProdutos.innerHTML+=`<tr><td>${p.nome}</td><td>R$ ${p.valor.toFixed(2)}</td><td><button onclick="removerProduto(${i})">Remover</button></td></tr>`;
+  });
+  localStorage.setItem('produtos',JSON.stringify(produtos));
+  if(produtos.length) preencherPrecoProduto();
+}
+
+function cadastrarProduto(){
+  if(!nomeProduto.value||!valorProduto.value) return alert('Preencha');
+  produtos.push({nome:nomeProduto.value,valor:Number(valorProduto.value)});
+  nomeProduto.value=valorProduto.value='';
+  atualizarProdutos();
+}
+
+function atualizarClientes(){
+  listaClientes.innerHTML='';
+  selectCliente.innerHTML='<option value="">Selecione...</option>';
+  clientes.forEach((c,i)=>{
+    listaClientes.innerHTML+=`<tr><td>${c.nome}</td><td>${c.cnpj}</td><td><button onclick="removerCliente(${i})">Remover</button></td></tr>`;
+    selectCliente.innerHTML+=`<option value="${i}">${c.nome}</option>`;
+  });
+  localStorage.setItem('clientes',JSON.stringify(clientes));
+}
+
+function cadastrarCliente(){
+  clientes.push({
+    nome:cliNome.value,cnpj:cliCNPJ.value,cep:cliCEP.value,
+    endereco:cliEndereco.value,numero:cliNumero.value,
+    bairro:cliBairro.value,cidade:cliCidade.value,
+    estado:cliEstado.value,complemento:cliComplemento.value
+  });
+  document.querySelectorAll('#clientes input').forEach(i=>i.value='');
+  atualizarClientes();
+}
+
+function preencherCliente(){
+  if(selectCliente.value==='')return;
+  const c=clientes[selectCliente.value];
+  clienteNome.value=c.nome||'';
+  clienteCNPJ.value=c.cnpj||'';
+  clienteCEP.value=c.cep||'';
+  clienteEndereco.value=c.endereco||'';
+  clienteNumero.value=c.numero||'';
+  clienteBairro.value=c.bairro||'';
+  clienteCidade.value=c.cidade||'';
+  clienteEstado.value=c.estado||'';
+  clienteComplemento.value=c.complemento||'';
+}
+
+function removerCliente(i){clientes.splice(i,1);atualizarClientes();}
+function removerProduto(i){produtos.splice(i,1);atualizarProdutos();}
+
+function preencherPrecoProduto(){
+  const p=produtos.find(p=>p.nome===pedidoProduto.value);
+  pedidoPreco.value=p?p.valor:'';
+}
+
+function adicionarItem(){
+  const q=Number(pedidoQuantidade.value);
+  const p=Number(pedidoPreco.value);
+  if(!q||!p) return alert('Erro no item');
+  itensTemporarios.push({produto:pedidoProduto.value,quantidade:q,preco:p,subtotal:q*p});
+  pedidoQuantidade.value=pedidoPreco.value='';
+  atualizarItens();
+}
+
+function atualizarItens(){
+  itensPedido.innerHTML='';
+  itensTemporarios.forEach((i,idx)=>{
+    itensPedido.innerHTML+=`<tr><td>${i.produto}</td><td>${i.quantidade}</td><td>R$ ${i.preco.toFixed(2)}</td><td>R$ ${i.subtotal.toFixed(2)}</td><td><button onclick="removerItem(${idx})">Remover</button></td></tr>`;
+  });
+}
+
+function removerItem(i){itensTemporarios.splice(i,1);atualizarItens();}
+
+function finalizarPedido(){
+  if(!itensTemporarios.length) return alert('Sem itens');
+  ultimoNumeroPedido++;
+  numeroPedido.value=ultimoNumeroPedido;
+  localStorage.setItem('ultimoNumeroPedido',ultimoNumeroPedido);
+  const total=itensTemporarios.reduce((s,i)=>s+i.subtotal,0);
+  pedidos.push({numero:ultimoNumeroPedido,cliente:clienteNome.value,cnpj:clienteCNPJ.value,endereco:clienteEndereco.value,itens:itensTemporarios,total});
+  itensTemporarios=[];
+  atualizarItens();
+  atualizarPedidos();
+  showTab(null,'pedidosLista');
+}
+
+function atualizarPedidos(){
+  listaPedidos.innerHTML='';
+  pedidos.forEach((p,i)=>{
+    listaPedidos.innerHTML+=`
+      <tr>
+        <td>#${p.numero}</td>
+        <td>${p.cliente}</td>
+        <td>${p.cnpj}</td>
+        <td>R$ ${p.total.toFixed(2)}</td>
+        <td>
+          <button onclick="baixarPedido(${i})">PDF</button>
+          <button onclick="removerPedido(${i})">Remover</button>
+        </td>
+      </tr>`;
+  });
+  localStorage.setItem('pedidos',JSON.stringify(pedidos));
+}
+
+function removerPedido(index){
+  if(!confirm('Deseja remover este pedido?')) return;
+  pedidos.splice(index,1);
+  atualizarPedidos();
+}
+
+function salvarEmpresa(){
+  empresa={nome:empresaNome.value,cnpj:empresaCNPJ.value,endereco:empresaEndereco.value,cidade:empresaCidade.value,estado:empresaEstado.value};
+  localStorage.setItem('empresa',JSON.stringify(empresa));
+  alert('Empresa salva');
+}
+
+function baixarPedido(index){
+  if(!empresa.nome) return alert('Cadastre a empresa');
+  const p=pedidos[index];
+  const w=window.open('','_blank');
+
+  let itensHtml='';
+  p.itens.forEach(i=>{
+    itensHtml+=`<tr><td>${i.produto}</td><td>${i.quantidade}</td><td>R$ ${i.preco.toFixed(2)}</td><td>R$ ${i.subtotal.toFixed(2)}</td></tr>`;
+  });
+
+  w.document.write(`
+    <h1>${empresa.nome}</h1>
+    <h2>Pedido Nº ${p.numero}</h2>
+    <p><strong>Nome:</strong> ${p.cliente}</p>
+    <p><strong>CNPJ:</strong> ${p.cnpj}</p>
+    <p><strong>Endereço:</strong> ${p.endereco}</p>
+    <table border="1" width="100%">
+      <tr><th>Produto</th><th>Qtd</th><th>Unitário</th><th>Subtotal</th></tr>
+      ${itensHtml}
+    </table>
+    <h3>Total: R$ ${p.total.toFixed(2)}</h3>
+  `);
+
+  w.print();
+}
+
+atualizarProdutos();
+atualizarClientes();
+atualizarPedidos();
+</script>
+
+</body>
+</html>
+<script>
+function baixarPedido(index){
+  if(!empresa.nome) return alert('Cadastre a empresa');
+  const p = pedidos[index];
+  const w = window.open('', '_blank');
+
+  let itensHtml = '';
+  p.itens.forEach(i=>{
+    itensHtml += `
+      <tr>
+        <td>${i.produto}</td>
+        <td>${i.quantidade}</td>
+        <td>R$ ${i.preco.toFixed(2)}</td>
+        <td>R$ ${i.subtotal.toFixed(2)}</td>
+      </tr>`;
+  });
+
+  w.document.write(`
+  <html>
+  <head>
+    <title>Pedido Nº ${p.numero}</title>
+    <style>
+      body { font-family: Arial; font-size: 12px; }
+      h2 { margin-bottom: 5px; }
+      hr { margin: 10px 0; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { border: 1px solid #000; padding: 6px; text-align: left; }
+      .bloco { margin-bottom: 15px; }
+      .assinatura { margin-top: 40px; }
+    </style>
+  </head>
+  <body>
+
+    <div class="bloco">
+      <h2>DADOS DA EMPRESA</h2>
+      <p><strong>Empresa:</strong> ${empresa.nome}</p>
+      <p><strong>CNPJ:</strong> ${empresa.cnpj}</p>
+      <p><strong>Endereço:</strong> ${empresa.endereco} - ${empresa.cidade}/${empresa.estado}</p>
+    </div>
+
+    <hr>
+
+    <div class="bloco">
+      <h2>DADOS DO CLIENTE</h2>
+      <p><strong>Nome:</strong> ${p.cliente}</p>
+      <p><strong>CNPJ:</strong> ${p.cnpj}</p>
+      <p><strong>Endereço:</strong> ${p.endereco}</p>
+    </div>
+
+    <hr>
+
+    <div class="bloco">
+      <h2>ITENS DO PEDIDO</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Qtd</th>
+            <th>Unitário</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itensHtml}
+        </tbody>
+      </table>
+      <h3>Total: R$ ${p.total.toFixed(2)}</h3>
+    </div>
+
+    <hr>
+
+    <div class="bloco">
+      <h2>DADOS DO CLIENTE</h2>
+      <p><strong>Nome:</strong> ${p.cliente}</p>
+      <p><strong>CNPJ:</strong> ${p.cnpj}</p>
+      <p><strong>Endereço:</strong> ${p.endereco}</p>
+    </div>
+
+    <div class="assinatura">
+      <p>__________________________________________</p>
+      <p><strong>Assinatura do Cliente</strong></p>
+    </div>
+
+  </body>
+  </html>
+  `);
+
+  w.print();
+}
+</script>
