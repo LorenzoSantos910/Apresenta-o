@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitrine de Sites - Lorenzo Santos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    header {
+      background-color: #1e88e5;
+      color: white;
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+    }
+
+    header p {
+      margin-top: 15px;
+      font-size: 1.2em;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: white;
+      color: #1e88e5;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #e0e0e0;
+    }
+
+    #quemSouEu {
+      display: none;
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      line-height: 1.6;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .site-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      overflow: hidden;
+      transition: transform 0.2s;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .site-card:hover {
+      transform: scale(1.03);
+    }
+
+    .site-card img {
+      width: 100%;
+      display: block;
+    }
+
+    .site-description {
+      display: none;
+      margin-top: 15px;
+      padding: 15px;
+      background-color: #e0f0ff;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #1e88e5;
+      color: white;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Olá, seja bem-vindo!</h1>
+    <p>Me chamo Lorenzo Santos e sou programador iniciante de HTML. Aqui está um dos meus projetos!</p>
+    <button class="btn" onclick="toggleQuemSouEu()">QUEM SOU EU?</button>
+  </header>
+
+  <div id="quemSouEu">
+    <h2>Sobre Mim</h2>
+    <p>
+      Me chamo <strong>Lorenzo</strong>, tenho apenas 15 anos e sou um Programador de HTML iniciante. 
+      Eu tenho interesse em Computadores desde os meus 5 anos de idade, e agora estou utilizando esse interesse para abrir portas e ganhar oportunidades no mundo da programação. 
+      Eu aprendi muito analisando meu primo fazendo programações em HTML, e apenas visualizando compreendi como utilizar o básico. 
+      Sou uma pessoa bem atenta em detalhes, aprendo coisas com facilidade e sou muito ágil. 
+      No meu tempo livre gosto de jogar jogos no computador, montar cubo mágico e jogar bola. 
+      Pretendo fazer faculdade no ramo de T.I, e começando desde cedo acredito que no futuro irá facilitar meu aprendizado nas tarefas.
+    </p>
+  </div>
+
+  <main>
+    <!-- Exemplo 1: GM Reparos -->
+    <div class="site-card" onclick="toggleDescription()">
+      <img src="/mnt/data/45ca20fd-4eaf-463e-9f05-6f7f9f93e3cd.png" alt="GM Reparos">
+      <h3>GM REPAROS</h3>
+      <div class="site-description" id="siteDescription">
+        Site criado para a Empresa GM REPAROS, esse site serve para Lançar Pedidos, Cadastrar Clientes e Produtos, trazendo o conforto e facilidade do usuário em utilizar as funções.
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Lorenzo Santos - Todos os direitos reservados
+  </footer>
+
+  <script>
+    function toggleQuemSouEu() {
+      const section = document.getElementById('quemSouEu');
+      if(section.style.display === 'none' || section.style.display === '') {
+        section.style.display = 'block';
+        section.scrollIntoView({behavior: "smooth"});
+      } else {
+        section.style.display = 'none';
+      }
+    }
+
+    function toggleDescription() {
+      const desc = document.getElementById('siteDescription');
+      if(desc.style.display === 'none' || desc.style.display === '') {
+        desc.style.display = 'block';
+        desc.scrollIntoView({behavior: "smooth"});
+      } else {
+        desc.style.display = 'none';
+      }
+    }
+  </script>
+
+</body>
+</html>
